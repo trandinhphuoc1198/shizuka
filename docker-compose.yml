@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+  django_unicorn:
+    volumes:
+      - static:/static
+      - ./django_project/test_project/:/app/
+    env_file:
+      - ./django_project/.env
+    build:
+      context: ./django_project
+    ports:
+      - "8000:8000"
+  redis-server:
+    image: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - "./redis/:/data"    
+  nginx:
+    image: nginx
+    volumes:
+      - ./nginx/:/etc/nginx/conf.d/
+      - static:/static
+    ports:
+      - "80:80"
+    depends_on:
+      - django_unicorn
+  
+
+volumes:
+  static:
